@@ -1,17 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
+    <properties resource="mybatis.properties">
+        <!--如果这里定义了，可以替换掉配置文件中的<property name="username" value="dev_user"/>-->
+        <!--<property name="password" value="F2Fa3!33TYyg"/>-->
+    </properties>
+
     <environments default="development">
         <environment id="development">
             <transactionManager type="JDBC" />
+
             <!-- 配置数据库连接信息 -->
             <dataSource type="POOLED">
                 <property name="driver" value="com.mysql.jdbc.Driver" />
-                <property name="url" value="jdbc:mysql://localhost:3306/mybatis" />
-                <property name="username" value="root" />
-                <property name="password" value="XDP" />
+                <property name="url" value="${db.url}" />
+                <property name="username" value="${db.username}" />
+                <property name="password" value="${db.password}" />
             </dataSource>
         </environment>
     </environments>
 
+    <mappers>
+        <mapper resource="training/mapper/xml/RoleMapper.xml"/>
+    </mappers>
 </configuration>
