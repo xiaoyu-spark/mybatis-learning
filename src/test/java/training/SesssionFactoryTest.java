@@ -23,6 +23,6 @@ public class SesssionFactoryTest {
         SqlSession session = SessionFactoryUtil.getSqlSession();
         String method = "training.mapper.xml.roleMapper.getRole";
         Role role = session.selectOne(method, "1");
-        System.out.println(role.getName());
+        System.out.println(role);
     }
 }

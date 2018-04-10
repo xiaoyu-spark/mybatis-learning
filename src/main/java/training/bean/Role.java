@@ -5,6 +5,7 @@ import java.util.*;
 public class Role implements Persistable {
     private String id;
     private String name;
+    private String enName;
     private boolean enabled = true;
     private List<String> permissions;
     private Date createdAt;
@@ -64,7 +65,15 @@ public class Role implements Persistable {
     public void setId(String id) {
         this.id = id;
     }
-    
+
+    public String getEnName() {
+        return enName;
+    }
+
+    public void setEnName(String enName) {
+        this.enName = enName;
+    }
+
     public boolean isNew() {
         return id == null;
     }
@@ -85,6 +94,6 @@ public class Role implements Persistable {
 
     @Override
     public String toString() {
-        return id + "/" + name;
+        return id + "/" + name + "/" + enName;
     }
 }

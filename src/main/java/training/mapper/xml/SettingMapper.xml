@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="training.mapper.xml.roleMapper">
+<mapper namespace="training.mapper.xml.settingMapper">
     <!--eviction(回收策略)-->
     <cache eviction="FIFO"
             flushInterval="60000"
             size="512"
             readOnly="true"/>
-    <select id="getRole" parameterType="string"
-            resultType="training.bean.Role">
-        select * from role where id=#{id}
+    <select id="getSetting" parameterType="string"
+            resultType="Setting">
+        select * from settings where name=#{name}
     </select>
 </mapper>
