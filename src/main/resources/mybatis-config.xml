@@ -74,8 +74,18 @@
         <!--参考settingMapper.xml resultType-->
         <typeAlias alias="Setting" type="training.bean.Setting"/>
     </typeAliases>
+
+
+    <!--MyBatis 每次创建结果对象的新实例时，它都会使用一个对象工厂（ObjectFactory）实例来完成。
+    默认的对象工厂需要做的仅仅是实例化目标类，要么通过默认构造方法，要么在参数映射存在的时候通过参数构造方法来实例化。
+    如果想覆盖对象工厂的默认行为，则可以通过创建自己的对象工厂来实现-->
+    <objectFactory type="training.common.DbObjectFactory">
+        <property name="someProperty" value="100"/>
+    </objectFactory>
+
     <environments default="development">
         <environment id="development">
+            <!--事务控制   参考readme 3-->
             <transactionManager type="JDBC" />
 
             <!-- 配置数据库连接信息 -->
@@ -88,7 +98,36 @@
                 <property name="password" value="${db.password}" />
             </dataSource>
         </environment>
+
+        <environment id="development2">
+            <transactionManager type="JDBC" />
+
+            <!-- 配置数据库连接信息 -->
+            <!--参考readme 2-->
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.jdbc.Driver" />
+                <property name="url" value="${db.url}" />
+                <!--占位符，3.4.2之后功能，如果冒号前面的属性没有提供，则采用后面的做为属性-->
+                <!--需要开启上面的org.apache.ibatis.parsing.PropertyParser.enable-default-value属性-->
+                <property name="username" value="${db.username:root}" />
+                <property name="password" value="${db.password}" />
+            </dataSource>
+        </environment>
     </environments>
+    <!--多厂商，对应多个sql方式-->
+    <!--MyBatis 可以根据不同的数据库厂商执行不同的语句，这种多厂商的支持是基于映射语句中的 databaseId 属性。
+        MyBatis 会加载不带 databaseId 属性和带有匹配当前数据库 databaseId 属性的所有语句。
+        如果同时找到带有 databaseId 和不带 databaseId 的相同语句，则后者会被舍弃。
+        在select中需要指明应对 的数据库
+        例如：
+        <select id="SelectTime"   resultType="String" databaseId="mysql">
+           SELECT  NOW() FROM dual
+        </select>
+    -->
+    <databaseIdProvider type="DB_VENDOR">
+        <property name="MySQL" value="mysql"/>
+        <property name="Oracle" value="oracle" />
+    </databaseIdProvider>
 
     <mappers>
         <mapper resource="training/mapper/xml/RoleMapper.xml"/>
