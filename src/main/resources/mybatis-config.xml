@@ -63,6 +63,7 @@
         <!--触发所有延迟加载属性立即执行加载-->
         <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString"/>
     </settings>
+
     <typeAliases>
         <!--类型别名是为 Java 类型设置一个短的名字。它只和 XML 配置有关，存在的意义仅在于用来减少类完全限定名的冗余-->
         <!--也可以指定一个包名，MyBatis 会在包名下面搜索需要的 Java Bean，比如:
@@ -73,8 +74,20 @@
         -->
         <!--参考settingMapper.xml resultType-->
         <typeAlias alias="Setting" type="training.bean.Setting"/>
+        <typeAlias alias="Enable" type="training.bean.Enable"/>
+        <typeAlias alias="AdminUser" type="training.bean.AdminUser"/>
     </typeAliases>
 
+
+    <!--
+    重写类型处理器或创建你自己的类型处理器来处理不支持的或非标准的类型。
+    具体做法为：实现 org.apache.ibatis.type.TypeHandler 接口，
+    或继承一个很便利的类 org.apache.ibatis.type.BaseTypeHandler，
+    然后可以选择性地将它映射到一个 JDBC 类型。比如：
+    -->
+    <typeHandlers>
+        <typeHandler handler="training.common.MyIntegerTypeHandler"/>
+    </typeHandlers>
 
     <!--MyBatis 每次创建结果对象的新实例时，它都会使用一个对象工厂（ObjectFactory）实例来完成。
     默认的对象工厂需要做的仅仅是实例化目标类，要么通过默认构造方法，要么在参数映射存在的时候通过参数构造方法来实例化。
@@ -132,6 +145,7 @@
     <mappers>
         <mapper resource="training/mapper/xml/RoleMapper.xml"/>
         <mapper resource="training/mapper/xml/SettingMapper.xml"/>
+        <mapper resource="training/mapper/xml/UserMapper.xml"/>
     </mappers>
 
 

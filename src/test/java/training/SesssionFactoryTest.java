@@ -35,11 +35,5 @@ public class SesssionFactoryTest {
         System.out.println(role.getName());
     }
 
-    @Test
-    public void selectOne() {
-        SqlSession session = SingleSessionFactoryUtil.getSqlSession();
-        String method = "training.mapper.xml.roleMapper.getRole";
-        Role role = session.selectOne(method, "1");
-        System.out.println(role);
-    }
+
 }

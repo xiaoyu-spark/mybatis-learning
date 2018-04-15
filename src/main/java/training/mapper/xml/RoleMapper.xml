@@ -1,14 +1,142 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="GBK" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="training.mapper.xml.roleMapper">
-    <!--eviction(鍥炴敹绛栫暐)-->
+    <!--eviction(回收策略)-->
     <cache eviction="FIFO"
             flushInterval="60000"
             size="512"
             readOnly="true"/>
+
+
+    <!--
+    select属性：
+        <select
+          id="selectPerson"
+          parameterType="int"
+          parameterMap="deprecated"
+          resultType="hashmap"
+          resultMap="personResultMap"
+          flushCache="false"
+          useCache="true"
+          timeout="10000"
+          fetchSize="256"
+          statementType="PREPARED"
+          resultSetType="FORWARD_ONLY">
+         parameterType:     将会传入这条语句的参数类的完全限定名或别名。这个属性是可选的，因为 MyBatis 可以通过 TypeHandler 推断出具体传入语句的参数，默认值为 unset。
+         resultType:        从这条语句中返回的期望类型的类的完全限定名或别名。注意如果是集合情形，那应该是集合可以包含的类型，而不能是集合本身。使用 resultType 或 resultMap，但不能同时使用。
+         resultMap:         外部 resultMap 的命名引用。结果集的映射是 MyBatis 最强大的特性，对其有一个很好的理解的话，许多复杂映射的情形都能迎刃而解。使用 resultMap 或 resultType，但不能同时使用。
+         flushCache:        将其设置为 true，任何时候只要语句被调用，都会导致本地缓存和二级缓存都会被清空，默认值：false。
+         useCache:          将其设置为 true，将会导致本条语句的结果被二级缓存，默认值：对 select 元素为 true。
+         timeout:           这个设置是在抛出异常之前，驱动程序等待数据库返回请求结果的秒数。默认值为 unset（依赖驱动）。
+         fetchSize:         这是尝试影响驱动程序每次批量返回的结果行数和这个设置值相等。默认值为 unset（依赖驱动）。
+         statementType:     STATEMENT，PREPARED 或 CALLABLE 的一个。这会让 MyBatis 分别使用 Statement，PreparedStatement 或 CallableStatement，默认值：PREPARED。
+         resultSetType:     FORWARD_ONLY，SCROLL_SENSITIVE 或 SCROLL_INSENSITIVE 中的一个，默认值为 unset （依赖驱动）。
+         databaseId:        如果配置了 databaseIdProvider，MyBatis 会加载所有的不带 databaseId 或匹配当前 databaseId 的语句；如果带或者不带的语句都有，则不带的会被忽略。
+         resultOrdered:     这个设置仅针对嵌套结果 select 语句适用：如果为 true，就是假设包含了嵌套结果集或是分组了，这样的话当返回一个主结果行的时候，就不会发生有对前面结果集的引用的情况。这就使得在获取嵌套的结果集的时候不至于导致内存不够用。默认值：false。
+         resultSets:        这个设置仅对多结果集的情况适用，它将列出语句执行后返回的结果集并每个结果集给一个名称，名称是逗号分隔的。
+    -->
     <select id="getRole" parameterType="string"
             resultType="training.bean.Role">
         select * from role where id=#{id}
     </select>
+
+    <!-- 这个元素可以被用来定义可重用的 SQL 代码段，可以包含在其他语句中。它可以被静态地(在加载参数) 参数化. 不同的属性值通过包含的实例变化.-->
+    <sql id="roleColumns">${alias}.id, ${alias}.name, ${alias}.description, ${alias}.en_name, ${alias}.createdAt</sql>
+    <select id="getRolesOnSqlTag" resultType="training.bean.Role">
+        SELECT
+          <include refid="roleColumns"><property name="alias" value="a"></property></include>
+        FROM
+        role a
+    </select>
+
+    <!--Parameters参数-->
+    <!--可以像insert一样直接放对象、list等，也可以指定类型，例如：#{property,javaType=int,jdbcType=NUMERIC}-->
+    <!-- 一般情况下不需要，可以自动识别， map的情况可以考虑 -->
+    <!--尽管所有这些选项很强大，但大多时候你只须简单地指定属性名，其他的事情 MyBatis 会自己去推断，顶多要为可能为空的列指定 jdbcType。 -->
+
+    <!--mybatis 的jdbcType-->
+    <!--BIT、FLOAT、CHAR 、TIMESTAMP 、 OTHER 、UNDEFINEDTINYINT 、REAL 、VARCHAR 、BINARY 、BLOB NVARCHAR、SMALLINT 、
+    DOUBLE 、LONGVARCHAR 、VARBINARY 、CLOB、NCHAR、INTEGER、 NUMERIC、DATE 、LONGVARBINARY 、BOOLEAN 、NCLOB、BIGINT 、
+    DECIMAL 、TIME 、NULL、CURSOR-->
+    <select id="getRolesOnParameterTag" resultType="training.bean.Role">
+        SELECT
+        <include refid="roleColumns"><property name="alias" value="a"></property></include>
+        FROM
+        role a
+        where id=#{id,javaType=_int, jdbcType=INTEGER}
+    </select>
+
+
+    <!-- Result Maps -->
+    <!--列名不匹配，一种是在settings里面设置驼峰，另外也可以使用resultMap -->
+    <resultMap id="roleResultMap" type="training.bean.Role">
+        <id property="id" column="id"></id>
+        <result property="enName" column="en_name"></result>
+    </resultMap>
+    <select id="getRolesOnResultMapTag" resultMap="roleResultMap">
+        SELECT
+        *
+        FROM
+        role a
+        where id=#{id}
+    </select>
+    <!--
+    Insert, Update, Delete 's Attributes
+
+    parameterType:      将要传入语句的参数的完全限定类名或别名。这个属性是可选的，因为 MyBatis 可以通过 TypeHandler 推断出具体传入语句的参数，默认值为 unset。
+    flushCache:         将其设置为 true，任何时候只要语句被调用，都会导致本地缓存和二级缓存都会被清空，默认值：true（对应插入、更新和删除语句）。
+    timeout:            这个设置是在抛出异常之前，驱动程序等待数据库返回请求结果的秒数。默认值为 unset（依赖驱动）。
+    statementType:      STATEMENT，PREPARED 或 CALLABLE 的一个。这会让 MyBatis 分别使用 Statement，PreparedStatement 或 CallableStatement，默认值：PREPARED。
+    useGeneratedKeys:   （仅对 insert 和 update 有用）这会令 MyBatis 使用 JDBC 的 getGeneratedKeys 方法来取出由数据库内部生成的主键（比如：像 MySQL 和 SQL Server 这样的关系数据库管理系统的自动递增字段），默认值：false。
+                        当设置为 true 时，表示如果插入的表以自增列为主键，则允许 JDBC 支持自动生成主键，并可将自动生成的主键返回。
+    keyProperty:        （仅对 insert 和 update 有用）唯一标记一个属性，MyBatis 会通过 getGeneratedKeys 的返回值或者通过 insert 语句的 selectKey 子元素设置它的键值，默认：unset。如果希望得到多个生成的列，也可以是逗号分隔的属性名称列表。
+    keyColumn:          （仅对 insert 和 update 有用）通过生成的键值设置表中的列名，这个设置仅在某些数据库（像 PostgreSQL）是必须的，当主键列不是表中的第一列的时候需要设置。如果希望得到多个生成的列，也可以是逗号分隔的属性名称列表。
+    databaseId:         如果配置了 databaseIdProvider，MyBatis 会加载所有的不带 databaseId 或匹配当前 databaseId 的语句；如果带或者不带的语句都有，则不带的会被忽略。
+
+    -->
+
+    <insert
+            id="insertRole"
+            parameterType="training.bean.Role"
+            flushCache="true"
+            statementType="PREPARED"
+            keyProperty="id"
+            keyColumn=""
+            useGeneratedKeys="true"
+            timeout="20">
+        insert into role (name,description,en_name)
+        values (#{name},#{description},#{enName})
+    </insert>
+
+    <insert
+            id="insertRoleBatch"
+            parameterType="training.bean.Role"
+            flushCache="true"
+            statementType="PREPARED"
+            keyProperty="createdAt"
+            keyColumn=""
+            useGeneratedKeys="true"
+            timeout="20">
+        insert into role (name,description,en_name) values
+        <foreach item="item"  collection="list" separator=",">
+            (#{item.name},#{item.description},#{item.enName})
+        </foreach>
+
+    </insert>
+
+    <update
+            id="updateRole"
+            parameterType="training.bean.Role"
+            flushCache="true"
+            statementType="PREPARED"
+            timeout="20">
+    </update>
+    <delete
+            id="deleteRole"
+            parameterType="training.bean.Role"
+            flushCache="true"
+            statementType="PREPARED"
+            timeout="20">
+    </delete>
 </mapper>

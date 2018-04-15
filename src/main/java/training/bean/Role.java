@@ -8,8 +8,17 @@ public class Role implements Persistable {
     private String enName;
     private boolean enabled = true;
     private List<String> permissions;
+    private String description;
     private Date createdAt;
     private Date updatedAt;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public String getName() {
         return name;
@@ -94,6 +103,6 @@ public class Role implements Persistable {
 
     @Override
     public String toString() {
-        return id + "/" + name + "/" + enName;
+        return id + "/" + name + "/" + enName + "/" + createdAt;
     }
 }
